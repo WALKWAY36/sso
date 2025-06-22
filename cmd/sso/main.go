@@ -3,7 +3,11 @@ package main
 import (
 	"log/slog"
 	"os"
-	"walkway36/sso/internal/config"
+	"os/signal"
+	"syscall"
+
+	"github.com/WALKWAY36/sso/internal/app"
+	"github.com/WALKWAY36/sso/internal/config"
 )
 
 const (
@@ -22,6 +26,16 @@ func main() {
 	application := app.New(log, cfg.GRPC.Port, cfg.StoragePath, cfg.TokenTTL)
 
 	go application.GRPCSrv.MustRun()
+
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGTERM, syscall.SIGINT)
+
+	signl := <-stop
+
+	log.Info("stopping app", slog.String("signal", signl.String()))
+
+	application.GRPCSrv.Stop()
+	log.Info("application stopped")
 }
 
 func setupLogger(env string) *slog.Logger {
