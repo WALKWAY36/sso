@@ -1,4 +1,4 @@
-module walkway36/sso
+module github.com/WALKWAY36/sso
 
 go 1.24.0
 
