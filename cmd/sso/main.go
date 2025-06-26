@@ -27,6 +27,7 @@ func main() {
 
 	go application.GRPCSrv.MustRun()
 
+	// Graceful shutdown
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, syscall.SIGTERM, syscall.SIGINT)
 
