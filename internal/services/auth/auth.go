@@ -14,11 +14,11 @@ import (
 )
 
 type Auth struct {
-	log          *slog.Logger
-	usrSaver     UserSaver
-	userProvider UserProvider
-	appProvider  AppProvider
-	tokenTTL     time.Duration
+	log         *slog.Logger
+	usrSaver    UserSaver
+	usrProvider UserProvider
+	appProvider AppProvider
+	tokenTTL    time.Duration
 }
 
 type UserSaver interface {
@@ -53,11 +53,11 @@ func New(
 	tokenTTL time.Duration,
 ) *Auth {
 	return &Auth{
-		usrSaver:     userSaver,
-		userProvider: userProvider,
-		log:          log,
-		appProvider:  appProvider,
-		tokenTTL:     tokenTTL,
+		usrSaver:    userSaver,
+		usrProvider: userProvider,
+		log:         log,
+		appProvider: appProvider,
+		tokenTTL:    tokenTTL,
 	}
 }
 
@@ -77,7 +77,7 @@ func (a *Auth) Login(
 	log.Info("attempting to login user")
 
 	// IDENTIFICATION
-	user, err := a.userProvider.User(ctx, email)
+	user, err := a.usrProvider.User(ctx, email)
 	if err != nil {
 		if errors.Is(err, storage.ErrUserNotFound) {
 			a.log.Warn("user not found", err)
@@ -158,7 +158,7 @@ func (a *Auth) IsAdmin(ctx context.Context, userID int64) (bool, error) {
 
 	log.Info("cheking if user is admin")
 
-	isAdmin, err := a.userProvider.IsAdmin(ctx, userID)
+	isAdmin, err := a.usrProvider.IsAdmin(ctx, userID)
 	if err != nil {
 		if errors.Is(err, storage.ErrAppNotFound) {
 			a.log.Warn("user not found", err)
