@@ -39,7 +39,7 @@ func (s *Storage) SaveUser(ctx context.Context, email string, passHash []byte) (
 		var sqliteErr sqlite3.Error
 
 		if errors.As(err, &sqliteErr) && sqliteErr.ExtendedCode == sqlite3.ErrConstraintUnique {
-			return 0, fmt.Errorf("%s, %w", op, storage.ErrUserNotExists)
+			return 0, fmt.Errorf("%s, %w", op, storage.ErrUserNotFound)
 		}
 
 		return 0, fmt.Errorf("%s: %w", op, err)
@@ -67,7 +67,7 @@ func (s *Storage) User(ctx context.Context, email string) (models.User, error) {
 	err = row.Scan(&user.ID, &user.Email, &user.PassHash)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return models.User{}, fmt.Errorf("%s: %w", op, storage.ErrUserNotExists)
+			return models.User{}, fmt.Errorf("%s: %w", op, storage.ErrUserNotFound)
 		}
 
 		return models.User{}, fmt.Errorf("%s: %w", op, err)
